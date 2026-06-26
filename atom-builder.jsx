@@ -464,6 +464,8 @@ function AtomView({ Z, neutrons, color, lang }) {
   view.current.target = target; // garde la cible de rotation à jour pour la boucle
   const pointers = useRef(new Map());
 
+  const focal = 440; // perspective compacte → noyau structuré et contenu
+
   // Nucléons remplissant le VOLUME d'une sphère (cœur compact), pas seulement la surface
   const nucleus = useMemo(() => {
     const total = protons + neutrons;
@@ -482,7 +484,7 @@ function AtomView({ Z, neutrons, color, lang }) {
       if (isProton) pc++;
       pts.push({ x: rr * s * Math.cos(phi), y: rr * y, z: rr * s * Math.sin(phi), p: isProton });
     }
-    return { pts, sphereR, dotR };
+    return { pts, sphereR, dotR, coreR: sphereR * (focal / (focal - sphereR)) + dotR * 1.6 + 3 };
   }, [protons, neutrons]);
 
   // Molette = zoom (écouteur natif non passif)
@@ -504,8 +506,7 @@ function AtomView({ Z, neutrons, color, lang }) {
       window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const meta = electronsMeta;
     const { pts, sphereR, dotR } = nucleus;
-    const focal = 230;
-    const hasQuarks = pts.length <= 80; // quarks rendus pour les noyaux légers/moyens
+    // focal défini au niveau du composant (noyau compact et structuré)
     const order = pts.map((_, i) => i);
     const parent = () => nucleusRefs.current.find(Boolean)?.parentNode;
     let prevT = 0;
@@ -581,7 +582,9 @@ function AtomView({ Z, neutrons, color, lang }) {
 
       // --- noyau : rotation 3D libre via matrice (horizontale, verticale, oblique) ---
       const depths = new Array(pts.length);
-      const showQ = hasQuarks && v.zoom >= 3;
+      const sxA = new Array(pts.length), syA = new Array(pts.length);
+      const rrA = new Array(pts.length), dpA = new Array(pts.length);
+      const showQ = v.zoom >= 2.4;
       for (let i = 0; i < pts.length; i++) {
         const node = nucleusRefs.current[i];
         if (!node) continue;
@@ -593,38 +596,62 @@ function AtomView({ Z, neutrons, color, lang }) {
         const depth = (zr + 1) / 2;
         depths[i] = zr;
         const sx = xr * sphereR * persp, sy = yr * sphereR * persp;
-        const rr = dotR * persp * (0.8 + depth * 0.35);
+        const rr = dotR * persp * (0.85 + depth * 0.2);
+        sxA[i] = sx; syA[i] = sy; rrA[i] = rr; dpA[i] = depth;
         node.setAttribute("cx", sx.toFixed(2));
         node.setAttribute("cy", sy.toFixed(2));
         node.setAttribute("r", rr.toFixed(2));
         node.style.opacity = (0.4 + depth * 0.6).toFixed(2);
-        // quarks : 3 par nucléon, visibles quand on plonge dans le noyau
-        if (showQ) {
+      }
+
+      // quarks : pool fixe des QCAP nucléons les plus en avant (fonctionne pour TOUS les éléments)
+      if (showQ) {
+        const QCAP = 80;
+        const ord = pts.map((_, i) => i).sort((a, b) => depths[a] - depths[b]); // arrière -> avant
+        const start = Math.max(0, ord.length - QCAP);
+        let slot = 0;
+        for (let k = ord.length - 1; k >= start; k--) { // les plus en avant d'abord
+          const i = ord[k];
+          const p = pts[i];
+          const sx = sxA[i], sy = syA[i], rr = rrA[i], depth = dpA[i];
           for (let q = 0; q < 3; q++) {
-            const idx = i * 3 + q;
+            const idx = slot * 3 + q;
+            const flavor = p.p ? (q < 2 ? "u" : "d") : (q < 1 ? "u" : "d");
             const a = q * 2.0944; // 120°
             const qx = sx + rr * 0.4 * Math.cos(a);
             const qy = sy + rr * 0.4 * Math.sin(a);
             const qn = quarkRefs.current[idx];
             if (qn) {
+              qn.setAttribute("class", flavor === "u" ? "cq-quark-u" : "cq-quark-d");
               qn.setAttribute("cx", qx.toFixed(2));
               qn.setAttribute("cy", qy.toFixed(2));
               qn.setAttribute("r", (rr * 0.42).toFixed(2));
               qn.style.opacity = (0.55 + depth * 0.45).toFixed(2);
+              qn.style.display = "";
             }
             const lb = quarkLabelRefs.current[idx];
             if (lb) {
+              lb.textContent = flavor;
               lb.setAttribute("x", qx.toFixed(2));
               lb.setAttribute("y", qy.toFixed(2));
               lb.setAttribute("font-size", (rr * 0.6).toFixed(2));
               lb.style.opacity = (0.7 + depth * 0.3).toFixed(2);
+              lb.style.display = "";
             }
+          }
+          slot++;
+        }
+        for (let s = slot; s < QCAP; s++) { // masquer les slots non utilisés
+          for (let q = 0; q < 3; q++) {
+            const idx = s * 3 + q;
+            const qn = quarkRefs.current[idx]; if (qn) qn.style.display = "none";
+            const lb = quarkLabelRefs.current[idx]; if (lb) lb.style.display = "none";
           }
         }
       }
       if (quarkGroupRef.current) quarkGroupRef.current.style.display = showQ ? "" : "none";
       // ordre de tracé : fond d'abord (effet de volume)
-      if (pts.length <= 220) {
+      if (pts.length <= 260) {
         const par = parent();
         if (par) {
           order.sort((a, b) => depths[a] - depths[b]);
@@ -648,7 +675,7 @@ function AtomView({ Z, neutrons, color, lang }) {
 
   // --- gestes tactiles / souris ---
   const onPointerDown = (e) => {
-    e.currentTarget.setPointerCapture?.(e.pointerId);
+    if (e.pointerType !== "touch") e.currentTarget.setPointerCapture?.(e.pointerId);
     pointers.current.set(e.pointerId, { x: e.clientX, y: e.clientY });
     const v = view.current;
     if (pointers.current.size === 1) {
@@ -720,34 +747,30 @@ function AtomView({ Z, neutrons, color, lang }) {
                 <stop offset="100%" stopColor="#070d1e" stopOpacity="0.92" />
               </radialGradient>
             </defs>
-            <circle cx="0" cy="0" r={nucleus.sphereR + 9} className="cq-nucleus-glow"
+            <circle cx="0" cy="0" r={nucleus.coreR + 5} className="cq-nucleus-glow"
                     style={{ fill: color }} />
-            <circle cx="0" cy="0" r={nucleus.sphereR * 1.02} fill={`url(#core-${Z})`} />
+            <circle cx="0" cy="0" r={nucleus.coreR} fill={`url(#core-${Z})`} />
             {nucleus.pts.map((n, i) => (
               <circle key={i} r={nucleus.dotR}
                       className={n.p ? "cq-proton" : "cq-neutron"}
                       ref={(el) => { nucleusRefs.current[i] = el; }} />
             ))}
-            {nucleus.pts.length <= 80 && (
-              <g ref={quarkGroupRef} style={{ display: "none" }}>
-                {nucleus.pts.map((n, i) =>
-                  [0, 1, 2].map((q) => {
-                    const flavor = n.p ? (q < 2 ? "u" : "d") : (q < 1 ? "u" : "d");
-                    const idx = i * 3 + q;
-                    return (
-                      <React.Fragment key={idx}>
-                        <circle r="1"
-                                className={flavor === "u" ? "cq-quark-u" : "cq-quark-d"}
-                                ref={(el) => { quarkRefs.current[idx] = el; }} />
-                        <text className="cq-quark-lbl" textAnchor="middle"
-                              dominantBaseline="central"
-                              ref={(el) => { quarkLabelRefs.current[idx] = el; }}>{flavor}</text>
-                      </React.Fragment>
-                    );
-                  })
-                )}
-              </g>
-            )}
+            <g ref={quarkGroupRef} style={{ display: "none" }}>
+              {Array.from({ length: 80 }).map((_, s) =>
+                [0, 1, 2].map((q) => {
+                  const idx = s * 3 + q;
+                  return (
+                    <React.Fragment key={idx}>
+                      <circle r="1" className="cq-quark-u" style={{ display: "none" }}
+                              ref={(el) => { quarkRefs.current[idx] = el; }} />
+                      <text className="cq-quark-lbl" textAnchor="middle"
+                            dominantBaseline="central" style={{ display: "none" }}
+                            ref={(el) => { quarkLabelRefs.current[idx] = el; }}>u</text>
+                    </React.Fragment>
+                  );
+                })
+              )}
+            </g>
           </g>
         </g>
       </svg>
@@ -777,14 +800,12 @@ function AtomView({ Z, neutrons, color, lang }) {
         <span className="cq-sub-chip"><i style={{ background: "#8C9AB4" }} />{L.neutrons} ({neutrons})</span>
       </div>
 
-      {nucleus.pts.length <= 80 && (
-        <div className="cq-sub-legend">
-          <span className="cq-sub-lab">{L.quarks}</span>
-          <span className="cq-sub-chip"><i style={{ background: "#F2A65A" }} />up (u)</span>
-          <span className="cq-sub-chip"><i style={{ background: "#5A8CF2" }} />down (d)</span>
-          <span className="cq-quark-note">— p = u·u·d · n = u·d·d</span>
-        </div>
-      )}
+      <div className="cq-sub-legend">
+        <span className="cq-sub-lab">{L.quarks}</span>
+        <span className="cq-sub-chip"><i style={{ background: "#F2A65A" }} />up (u)</span>
+        <span className="cq-sub-chip"><i style={{ background: "#5A8CF2" }} />down (d)</span>
+        <span className="cq-quark-note">— p = u·u·d · n = u·d·d</span>
+      </div>
 
       <div className="cq-sub-legend">
         <span className="cq-sub-lab">{L.subshells}</span>
@@ -918,7 +939,7 @@ const DANGER_EN = {
 /* Libellés d'interface (FR / EN) */
 const I18N = {
   fr: {
-    eyebrow:"Le Royaume de la Mati\u00e8re \u00b7 Module 1", title:"Chemistry Quest", subtitle:"Le Constructeur d'Atomes", defsTitle:"Définitions essentielles", isotopesLabel:"Isotopes notables :", radioactive:"Élément radioactif (aucun isotope stable)", defsNote:"Les orbites et les quarks sont représentés de façon simplifiée : la réalité quantique est plus subtile.",
+    eyebrow:"Le Royaume de la Mati\u00e8re \u00b7 Module 1", title:"Chemistry Quest", subtitle:"Le Constructeur d'Atomes", install:"Installer l'application", defsTitle:"Définitions essentielles", isotopesLabel:"Isotopes notables :", radioactive:"Élément radioactif (aucun isotope stable)", defsNote:"Les orbites et les quarks sont représentés de façon simplifiée : la réalité quantique est plus subtile.",
     lede:"Ajoute un proton. Regarde la mati\u00e8re changer d'identit\u00e9, sous tes yeux.",
     explore:"Explorer", defi:"Mode D\u00e9fi", categories:"\u2190 Cat\u00e9gories", pts:"pts", serie:"s\u00e9rie",
     defiN:"D\u00e9fi", correct:"\u2713 Bravo, c'est exact !", next:"D\u00e9fi suivant \u2192", needHint:"Besoin d'un indice ?",
@@ -938,7 +959,7 @@ const I18N = {
     states:{gaz:"gazeux",liquide:"liquide",solide:"solide"},
   },
   en: {
-    eyebrow:"The Realm of Matter \u00b7 Module 1", title:"Chemistry Quest", subtitle:"The Atom Builder", defsTitle:"Key definitions", isotopesLabel:"Notable isotopes:", radioactive:"Radioactive element (no stable isotope)", defsNote:"Orbits and quarks are shown in a simplified way: quantum reality is more subtle.",
+    eyebrow:"The Realm of Matter \u00b7 Module 1", title:"Chemistry Quest", subtitle:"The Atom Builder", install:"Install the app", defsTitle:"Key definitions", isotopesLabel:"Notable isotopes:", radioactive:"Radioactive element (no stable isotope)", defsNote:"Orbits and quarks are shown in a simplified way: quantum reality is more subtle.",
     lede:"Add a proton. Watch matter change its identity, before your eyes.",
     explore:"Explore", defi:"Challenge Mode", categories:"\u2190 Categories", pts:"pts", serie:"streak",
     defiN:"Challenge", correct:"\u2713 Well done, that's correct!", next:"Next challenge \u2192", needHint:"Need a hint?",
@@ -958,7 +979,7 @@ const I18N = {
     states:{gaz:"gaseous",liquide:"liquid",solide:"solid"},
   },
   ar: {
-    eyebrow:"مملكة المادة · الوحدة 1", title:"Chemistry Quest", subtitle:"باني الذرّات", defsTitle:"تعريفات أساسية", isotopesLabel:"نظائر بارزة:", radioactive:"عنصر مشعّ (لا نظير مستقرّ)", defsNote:"تُعرض المدارات والكواركات بشكل مبسّط: الواقع الكمومي أدقّ من ذلك.",
+    eyebrow:"مملكة المادة · الوحدة 1", title:"Chemistry Quest", subtitle:"باني الذرّات", install:"تثبيت التطبيق", defsTitle:"تعريفات أساسية", isotopesLabel:"نظائر بارزة:", radioactive:"عنصر مشعّ (لا نظير مستقرّ)", defsNote:"تُعرض المدارات والكواركات بشكل مبسّط: الواقع الكمومي أدقّ من ذلك.",
     lede:"أضِف بروتونًا. شاهِد المادة تُغيّر هويتها أمام عينيك.",
     explore:"استكشاف", defi:"وضع التحدّي", categories:"الفئات", pts:"نقطة", serie:"سلسلة",
     defiN:"تحدٍّ", correct:"✓ أحسنت، إجابة صحيحة!", next:"التحدّي التالي", needHint:"تحتاج تلميحًا؟",
@@ -1400,6 +1421,28 @@ export default function ChemistryQuest() {
   const catL = (k) => m3(CATS[k].l, CATS[k].le, CATS[k].la);
   const dispName = NM(Z, lang);
 
+  // Définitions repliables (anti-encombrement)
+  const [showDefs, setShowDefs] = useState(false);
+
+  // Bouton d'installation PWA : on capte l'événement natif du navigateur
+  const [installEvt, setInstallEvt] = useState(null);
+  useEffect(() => {
+    const onPrompt = (e) => { e.preventDefault(); setInstallEvt(e); };
+    const onInstalled = () => setInstallEvt(null);
+    window.addEventListener("beforeinstallprompt", onPrompt);
+    window.addEventListener("appinstalled", onInstalled);
+    return () => {
+      window.removeEventListener("beforeinstallprompt", onPrompt);
+      window.removeEventListener("appinstalled", onInstalled);
+    };
+  }, []);
+  const doInstall = async () => {
+    if (!installEvt) return;
+    installEvt.prompt();
+    try { await installEvt.userChoice; } catch (e) {}
+    setInstallEvt(null);
+  };
+
   const startDefi = () => { setMode("defi"); setPartie(null); setChallenge(null); };
   const selectPartie = (id) => {
     setPartie(id); setChallenge(catGen(id)(lang));
@@ -1471,6 +1514,10 @@ export default function ChemistryQuest() {
       </header>
 
       <p className="cq-lede">{L.lede}</p>
+
+      {installEvt && (
+        <button className="cq-install" onClick={doInstall}>⤓ {L.install}</button>
+      )}
 
       {/* SÉLECTEUR DE MODE */}
       <div className="cq-modes">
@@ -1652,16 +1699,25 @@ export default function ChemistryQuest() {
 
       {/* DÉFINITIONS ESSENTIELLES */}
       <section className="cq-defs">
-        <h2 className="cq-defs-title">{L.defsTitle}</h2>
-        <div className="cq-defs-grid">
-          {DEFINITIONS.map((d) => (
-            <div key={d.id} className="cq-def">
-              <span className="cq-def-term">{m3(d.term.fr, d.term.en, d.term.ar)}</span>
-              <span className="cq-def-text">{m3(d.def.fr, d.def.en, d.def.ar)}</span>
+        <button className={"cq-defs-toggle" + (showDefs ? " open" : "")}
+                onClick={() => setShowDefs((v) => !v)}
+                aria-expanded={showDefs}>
+          <span className="cq-defs-title">{L.defsTitle}</span>
+          <span className="cq-defs-chev" aria-hidden="true">{showDefs ? "▾" : "▸"}</span>
+        </button>
+        {showDefs && (
+          <>
+            <div className="cq-defs-grid">
+              {DEFINITIONS.map((d) => (
+                <div key={d.id} className="cq-def">
+                  <span className="cq-def-term">{m3(d.term.fr, d.term.en, d.term.ar)}</span>
+                  <span className="cq-def-text">{m3(d.def.fr, d.def.en, d.def.ar)}</span>
+                </div>
+              ))}
             </div>
-          ))}
-        </div>
-        <p className="cq-defs-note">{L.defsNote}</p>
+            <p className="cq-defs-note">{L.defsNote}</p>
+          </>
+        )}
       </section>
 
       {/* TABLEAU PÉRIODIQUE */}
@@ -1789,7 +1845,7 @@ const CSS = `
 .cq-stage{position:relative;z-index:1;margin-top:6px;}
 .cq-atom{width:100%;height:auto;max-height:52vh;display:block;overflow:hidden;
   animation:cq-enter .5s ease-out;transform-box:view-box;transform-origin:center;
-  touch-action:none;cursor:grab;-webkit-user-select:none;user-select:none;}
+  touch-action:pan-y;cursor:grab;-webkit-user-select:none;user-select:none;}
 .cq-atom:active{cursor:grabbing;}
 @keyframes cq-enter{from{opacity:.15;transform:scale(.9);}to{opacity:1;transform:scale(1);}}
 .cq-orbit{fill:none;stroke:#9fb6e236;stroke-width:1.1;}
@@ -2051,8 +2107,19 @@ const CSS = `
 
 /* définitions essentielles */
 .cq-defs{margin:26px 2px 0;position:relative;z-index:1;}
-.cq-defs-title{font-family:'Cormorant Garamond',serif;font-weight:600;font-size:21px;
+.cq-defs-title{font-family:'Cormorant Garamond',serif;font-weight:600;font-size:21px;margin:0;
   color:#fff;margin:0 0 12px;}
+.cq-install{display:inline-flex;align-items:center;gap:8px;margin:0 2px 4px;
+  font-family:'Space Grotesk',sans-serif;font-size:14px;font-weight:600;cursor:pointer;
+  color:#1a1304;background:linear-gradient(135deg,#E8C778,#d8b15a);
+  border:none;border-radius:11px;padding:10px 16px;
+  box-shadow:0 6px 18px -6px rgba(232,199,120,.5);}
+.cq-install:hover{filter:brightness(1.05);}
+.cq-defs-toggle{display:flex;align-items:center;justify-content:space-between;gap:12px;
+  width:100%;cursor:pointer;background:rgba(255,255,255,.03);
+  border:1px solid rgba(232,199,120,.18);border-radius:12px;padding:11px 15px;text-align:start;}
+.cq-defs-toggle:hover{background:rgba(232,199,120,.08);border-color:rgba(232,199,120,.34);}
+.cq-defs-chev{color:#E8C778;font-size:14px;}
 .cq-defs-grid{display:grid;grid-template-columns:1fr;gap:10px;}
 .cq-def{padding:13px 15px;border-radius:14px;background:linear-gradient(160deg,#16264e44,#0c193855);
   border:1px solid #ffffff12;}

@@ -1,5 +1,5 @@
 /* Service worker — cache l'app pour un fonctionnement hors-ligne */
-const CACHE = "constructeur-atomes-v13";
+const CACHE = "constructeur-atomes-v14";
 const ASSETS = [
   "./",
   "./index.html",

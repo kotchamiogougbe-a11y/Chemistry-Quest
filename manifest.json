@@ -1,20 +1,45 @@
 {
   "name": "Chemistry Quest — KOTCHAMI",
   "short_name": "Chemistry Quest",
+  "id": "/Chemistry-Quest/",
   "description": "Construis les 118 éléments, manipule le noyau en 3D, relève des défis. L'empreinte des passeurs.",
   "lang": "fr",
   "dir": "ltr",
   "start_url": "./index.html?source=pwa",
+  "id": "./index.html?source=pwa",
   "scope": "./",
   "display": "standalone",
   "orientation": "any",
   "background_color": "#0b1430",
   "theme_color": "#0b1430",
-  "categories": ["education", "games"],
+  "categories": [
+    "education",
+    "games"
+  ],
   "icons": [
-    { "src": "./icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
-    { "src": "./icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
-    { "src": "./icons/icon-maskable-192.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable" },
-    { "src": "./icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+    {
+      "src": "./icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "./icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "./icons/icon-maskable-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "./icons/icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
   ]
 }
