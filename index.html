@@ -3,33 +3,204 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover" />
-<meta name="theme-color" content="#0c1838" />
-<meta name="description" content="Le Constructeur d'Atomes — explore les 118 éléments, manipule le noyau en 3D et relève des défis. Un module Science Quest par Kotchami." />
-<title>Le Constructeur d'Atomes — Chemistry Quest</title>
-<link rel="manifest" href="manifest.json" />
-<link rel="icon" href="icon-192.png" />
-<link rel="apple-touch-icon" href="icon-192.png" />
+<meta name="theme-color" content="#0b1430" />
+
+<title>Chemistry Quest — Tableau périodique interactif & atome 3D | KOTCHAMI</title>
+<meta name="description" content="Construis les 118 éléments du tableau périodique, manipule le noyau en 3D jusqu'aux quarks, et découvre usages, pays producteurs et savants. Chimie interactive en français, anglais et arabe — KOTCHAMI, l'empreinte des passeurs." />
+<meta name="keywords" content="tableau périodique, 118 éléments, atome 3D, constructeur d'atomes, chemistry quest, chimie interactive, électron, proton, neutron, quark, isotope, radioactivité, configuration électronique, KOTCHAMI, Science Quest, periodic table, atom builder" />
+<meta name="author" content="Kotchami Ogougbe" />
+<meta name="robots" content="index, follow" />
+<link rel="canonical" href="https://kotchamiogougbe-a11y.github.io/Chemistry-Quest/" />
+<meta name="application-name" content="Chemistry Quest — KOTCHAMI" />
+<meta name="apple-mobile-web-app-title" content="Chemistry Quest" />
+
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="KOTCHAMI — L'empreinte des passeurs" />
+<meta property="og:title" content="Chemistry Quest — Tableau périodique interactif & atome 3D" />
+<meta property="og:description" content="Construis les 118 éléments, manipule le noyau en 3D jusqu'aux quarks, découvre usages, pays producteurs et savants. FR / EN / AR." />
+<meta property="og:url" content="https://kotchamiogougbe-a11y.github.io/Chemistry-Quest/" />
+<meta property="og:image" content="https://kotchamiogougbe-a11y.github.io/Chemistry-Quest/feature-graphic-1024x500.png" />
+<meta property="og:locale" content="fr_FR" />
+<meta property="og:locale:alternate" content="en_US" />
+<meta property="og:locale:alternate" content="ar_AR" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Chemistry Quest — Tableau périodique interactif 3D" />
+<meta name="twitter:description" content="Construis les 118 éléments et plonge dans le noyau jusqu'aux quarks. Chimie interactive FR / EN / AR." />
+<meta name="twitter:image" content="https://kotchamiogougbe-a11y.github.io/Chemistry-Quest/feature-graphic-1024x500.png" />
+
+<!-- Manifest & icônes de marque KOTCHAMI (chemins relatifs : app en sous-dossier) -->
+<link rel="manifest" href="./manifest.json" />
+<link rel="icon" href="./icons/favicon.ico" sizes="any" />
+<link rel="icon" type="image/svg+xml" href="./icons/favicon.svg" />
+<link rel="icon" type="image/png" sizes="32x32" href="./icons/favicon-32.png" />
+<link rel="apple-touch-icon" href="./icons/apple-touch-180.png" />
 <meta name="mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600&family=Space+Grotesk:wght@300;400;500&display=swap" rel="stylesheet" />
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "Chemistry Quest",
+  "alternateName": ["Le Constructeur d'Atomes", "The Atom Builder", "باني الذرّات"],
+  "url": "https://kotchamiogougbe-a11y.github.io/Chemistry-Quest/",
+  "applicationCategory": "EducationalApplication",
+  "operatingSystem": "Web",
+  "inLanguage": ["fr", "en", "ar"],
+  "isAccessibleForFree": true,
+  "author": { "@type": "Person", "name": "Kotchami Ogougbe" },
+  "publisher": { "@type": "Organization", "name": "KOTCHAMI", "slogan": "L'empreinte des passeurs" },
+  "description": "Application éducative interactive pour explorer les 118 éléments du tableau périodique, construire des atomes, manipuler le noyau en 3D jusqu'aux quarks, et découvrir usages, pays producteurs et savants.",
+  "about": [
+    { "@type": "Thing", "name": "Tableau périodique des éléments" },
+    { "@type": "Thing", "name": "Atome" },
+    { "@type": "Thing", "name": "Électron" },
+    { "@type": "Thing", "name": "Proton" },
+    { "@type": "Thing", "name": "Neutron" },
+    { "@type": "Thing", "name": "Quark" }
+  ]
+}
+</script>
+
 <style>
-  html,body{margin:0;padding:0;background:#070f24;}
+  :root{--navy-0:#070b1c;--navy-1:#0c1430;--navy-2:#16224d;--gold:#e8c46a;--gold-mute:#b89a55;--ink:#dfe4f3}
+  html,body{margin:0;padding:0;background:#0b1430;}
   #root{min-height:100vh;}
-  #splash{position:fixed;inset:0;display:grid;place-items:center;background:#070f24;
-    color:#d8b15a;font-family:Georgia,serif;font-size:20px;z-index:9;transition:opacity .4s;}
+  .seo{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);}
+
+  /* ===== Splash « La Traversée » (signature KOTCHAMI) ===== */
+  #splash{position:fixed;inset:0;z-index:9999;overflow:hidden;
+    background:radial-gradient(120% 90% at 50% 38%, var(--navy-2) 0%, var(--navy-1) 38%, var(--navy-0) 72%);
+    display:flex;align-items:center;justify-content:center;
+    transition:opacity .6s ease;font-family:'Space Grotesk',sans-serif;color:var(--ink);}
   #splash.hide{opacity:0;pointer-events:none;}
+  #splash .stars{position:absolute;inset:0}
+  #splash .star-dot{position:absolute;border-radius:50%;background:#fff;animation:tw var(--d) ease-in-out infinite alternate;opacity:0}
+  @keyframes tw{from{opacity:.12}to{opacity:var(--o)}}
+  #splash .stage{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:0 30px}
+  #splash .markwrap{height:min(33vh,205px);display:flex;align-items:center;justify-content:center}
+  #splash .mark{height:100%;max-width:78%;overflow:visible}
+  #splash .kglyph{font-family:'Cormorant Garamond',serif;font-weight:600;fill:url(#goldgrad);
+    opacity:0;transform-box:fill-box;transform-origin:center;transform:translateY(8px) scale(.92)}
+  #splash .wordmark{font-family:'Cormorant Garamond',serif;font-weight:500;letter-spacing:.26em;padding-left:.26em;
+    font-size:clamp(28px,8vw,44px);line-height:1;text-align:center;margin-top:18px;
+    background:linear-gradient(110deg,#9a6f28,#e8c46a 26%,#fff7df 47%,#fff 50%,#fff7df 53%,#e8c46a 74%,#9a6f28);
+    background-size:260% 100%;background-position:120% 0;
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    opacity:0;transform:translateY(12px);filter:drop-shadow(0 0 24px rgba(232,196,106,.26))}
+  #splash .baseline{font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:500;font-size:clamp(14px,3.7vw,18px);
+    letter-spacing:.06em;color:#cdab63;text-align:center;margin-top:8px;opacity:0}
+  #splash .divider{width:0;height:1px;margin:26px 0 13px;background:linear-gradient(90deg,transparent,var(--gold),transparent);opacity:0}
+  #splash .tagline{font-weight:400;font-size:clamp(10px,2.7vw,12px);letter-spacing:.42em;text-transform:uppercase;color:var(--gold-mute);text-align:center;padding-left:.42em;opacity:0}
+  #splash .sdg{position:absolute;bottom:28px;left:0;right:0;text-align:center;font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:400;font-size:13.5px;letter-spacing:1.5px;color:var(--gold-mute);opacity:0}
+  #splash.play .kglyph{animation:emerge 1.2s .3s cubic-bezier(.2,.7,.2,1) forwards}
+  #splash.play .wordmark{animation:rise .9s 1.2s cubic-bezier(.2,.7,.2,1) forwards, sheen 1.5s 1.6s ease-out forwards}
+  #splash.play .baseline{animation:fade .9s 1.8s ease forwards}
+  #splash.play .divider{animation:spread .7s 2.0s ease forwards}
+  #splash.play .tagline{animation:fade .9s 2.15s ease forwards}
+  #splash.play .sdg{animation:fade 1s 2.35s ease forwards}
+  @keyframes emerge{to{opacity:1;transform:translateY(0) scale(1)}}
+  @keyframes rise{to{opacity:1;transform:translateY(0)}}
+  @keyframes sheen{from{background-position:120% 0}to{background-position:-40% 0}}
+  @keyframes spread{to{opacity:1;width:120px}}
+  @keyframes fade{to{opacity:1}}
+  @media (prefers-reduced-motion:reduce){
+    #splash.play .kglyph{animation:none;opacity:1;transform:none}
+    #splash.play .wordmark{animation:none;opacity:1;transform:none;background-position:50% 0}
+    #splash.play .baseline,#splash.play .divider,#splash.play .tagline,#splash.play .sdg{animation:none;opacity:1}
+    #splash.play .divider{width:120px}#splash .star-dot{animation:none;opacity:var(--o)}
+  }
 </style>
 </head>
 <body>
-<div id="splash">Le Constructeur d'Atomes…</div>
+
+<!-- ===== Signature KOTCHAMI — La Traversée (partie haute constante) ===== -->
+<div id="splash" class="play" role="img" aria-label="KOTCHAMI — L'empreinte des passeurs">
+  <div class="stars" id="stars"></div>
+  <div class="stage">
+    <div class="markwrap">
+      <svg class="mark" viewBox="0 0 220 300" aria-hidden="true">
+        <defs>
+          <linearGradient id="goldgrad" x1="0" y1="0" x2="0.35" y2="1">
+            <stop offset="0%" stop-color="#5e3f12"/><stop offset="20%" stop-color="#a87c2c"/>
+            <stop offset="44%" stop-color="#f4d57e"/><stop offset="54%" stop-color="#fff7df"/>
+            <stop offset="66%" stop-color="#edc868"/><stop offset="86%" stop-color="#b0832f"/>
+            <stop offset="100%" stop-color="#6b4715"/>
+          </linearGradient>
+        </defs>
+        <text class="kglyph" x="110" y="222" text-anchor="middle" font-size="250">K</text>
+      </svg>
+    </div>
+    <div class="wordmark">KOTCHAMI</div>
+    <div class="baseline">L'empreinte des passeurs</div>
+    <div class="divider"></div>
+    <p class="tagline" id="tagline">Chemistry&nbsp;Quest</p>
+    <div class="sdg">Soli Deo Gloria</div>
+  </div>
+</div>
+
+<!-- Contenu pour les moteurs de recherche et l'accessibilité -->
+<div class="seo">
+  <h1>Chemistry Quest — Le Constructeur d'Atomes</h1>
+  <h2>Une chimie interactive en français, anglais et arabe</h2>
+  <p>Le Constructeur d'Atomes est une application éducative gratuite créée par Kotchami Ogougbe (KOTCHAMI — l'empreinte des passeurs). Elle permet d'explorer les 118 éléments du tableau périodique, de construire des atomes proton par proton, de visualiser le noyau en trois dimensions jusqu'aux quarks, et de découvrir la configuration électronique, les isotopes, la radioactivité, les usages dans la vie réelle, les pays producteurs, l'intérêt technologique et les savants associés à chaque élément.</p>
+  <h3>Définitions essentielles</h3>
+  <p>Électron : particule de charge négative qui entoure le noyau. Proton : particule de charge positive du noyau qui définit l'élément. Neutron : particule neutre du noyau qui distingue les isotopes. Quark : constituant des protons et des neutrons, parmi les plus petits composants connus de la matière.</p>
+  <h2 lang="en">Interactive chemistry — periodic table and 3D atom</h2>
+  <p lang="en">The Atom Builder is a free educational web app by Kotchami Ogougbe to explore the 118 elements of the periodic table, build atoms proton by proton, view the nucleus in 3D down to the quarks, and learn electron configuration, isotopes, radioactivity, real-life uses, producing countries, technological importance and the scientists behind each element. Available in French, English and Arabic.</p>
+  <h2 lang="ar" dir="rtl">كيمياء تفاعلية — الجدول الدوري والذرّة ثلاثية الأبعاد</h2>
+  <p lang="ar" dir="rtl">«باني الذرّات» تطبيق تعليمي مجاني من إعداد كوتشامي أوغوغبي لاستكشاف عناصر الجدول الدوري الـ118، وبناء الذرّات بروتونًا تلو الآخر، ورؤية النواة بأبعاد ثلاثية حتى الكواركات، وتعلّم التوزيع الإلكتروني والنظائر والنشاط الإشعاعي والاستخدامات والدول المنتجة والأهمية التقنية والعلماء. متوفّر بالفرنسية والإنجليزية والعربية.</p>
+  <p>Un module Science Quest. Soli Deo Gloria.</p>
+</div>
+
+<noscript>
+  <p style="color:#dfe7f5;font-family:Georgia,serif;text-align:center;padding:30px;">
+    Le Constructeur d'Atomes nécessite JavaScript pour fonctionner. Activez JavaScript
+    pour explorer les 118 éléments du tableau périodique en interactif.
+  </p>
+</noscript>
+
 <div id="root"></div>
 <script src="app.js"></script>
 <script>
-  // masque le splash une fois l'app montée
-  requestAnimationFrame(() => {
-    const s = document.getElementById('splash');
-    if (s) setTimeout(() => s.classList.add('hide'), 300);
-  });
+  /* ⬇️⬇️ SEUL ÉLÉMENT À CHANGER D'UNE APP À L'AUTRE : le nom du projet ⬇️⬇️ */
+  var PROJECT = "Chemistry Quest";
+  /* ⬆️⬆️ La partie haute (K + KOTCHAMI + baseline) reste identique partout ⬆️⬆️ */
+
+  (function () {
+    var tag = document.getElementById('tagline');
+    if (tag) tag.innerHTML = PROJECT.replace(/ /g, '\u00A0');
+
+    // ciel étoilé
+    var sky = document.getElementById('stars');
+    if (sky) {
+      for (var i = 0; i < 70; i++) {
+        var s = document.createElement('span');
+        s.className = 'star-dot';
+        var z = Math.random() * 1.8 + 0.4;
+        s.style.width = s.style.height = z + 'px';
+        s.style.left = (Math.random() * 100) + '%';
+        s.style.top = (Math.random() * 100) + '%';
+        s.style.setProperty('--o', (Math.random() * 0.6 + 0.3).toFixed(2));
+        s.style.setProperty('--d', (Math.random() * 3 + 2).toFixed(1) + 's');
+        s.style.animationDelay = (Math.random() * 3).toFixed(1) + 's';
+        sky.appendChild(s);
+      }
+    }
+
+    // durée de l'animation puis fondu vers l'app (plus court si l'utilisateur réduit les animations)
+    var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var delay = reduce ? 1200 : 3600;
+    setTimeout(function () {
+      var sp = document.getElementById('splash');
+      if (sp) sp.classList.add('hide');
+    }, delay);
+  })();
 </script>
 </body>
 </html>

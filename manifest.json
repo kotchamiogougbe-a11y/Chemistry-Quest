@@ -1,19 +1,20 @@
 {
-  "name": "Le Constructeur d'Atomes",
-  "short_name": "Atomes",
-  "description": "Explore les 118 éléments, manipule le noyau en 3D, relève des défis. Module Science Quest — Kotchami.",
+  "name": "Chemistry Quest — KOTCHAMI",
+  "short_name": "Chemistry Quest",
+  "description": "Construis les 118 éléments, manipule le noyau en 3D, relève des défis. L'empreinte des passeurs.",
   "lang": "fr",
   "dir": "ltr",
-  "start_url": "./index.html",
+  "start_url": "./index.html?source=pwa",
   "scope": "./",
   "display": "standalone",
-  "orientation": "portrait",
-  "background_color": "#070f24",
-  "theme_color": "#0c1838",
+  "orientation": "any",
+  "background_color": "#0b1430",
+  "theme_color": "#0b1430",
   "categories": ["education", "games"],
   "icons": [
-    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
-    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
-    { "src": "icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+    { "src": "./icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "./icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "./icons/icon-maskable-192.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable" },
+    { "src": "./icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
   ]
 }

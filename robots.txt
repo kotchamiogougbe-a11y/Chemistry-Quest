@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://kotchamiogougbe-a11y.github.io/Chemistry-Quest/sitemap.xml
