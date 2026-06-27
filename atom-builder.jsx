@@ -494,7 +494,7 @@ function AtomView({ Z, neutrons, color, lang }) {
     const onWheel = (e) => {
       e.preventDefault();
       const v = view.current;
-      v.zoom = clamp(v.zoom * (1 - e.deltaY * 0.0015), 0.6, 14);
+      v.zoom = clamp(v.zoom * (1 - e.deltaY * 0.0015), 0.6, 30);
     };
     el.addEventListener("wheel", onWheel, { passive: false });
     return () => el.removeEventListener("wheel", onWheel);
@@ -606,7 +606,7 @@ function AtomView({ Z, neutrons, color, lang }) {
 
       // quarks : pool fixe des QCAP nucléons les plus en avant (fonctionne pour TOUS les éléments)
       if (showQ) {
-        const QCAP = 80;
+        const QCAP = 120;  // couvre le front des noyaux lourds (jusqu'a l'uranium)
         const ord = pts.map((_, i) => i).sort((a, b) => depths[a] - depths[b]); // arrière -> avant
         const start = Math.max(0, ord.length - QCAP);
         let slot = 0;
@@ -651,7 +651,7 @@ function AtomView({ Z, neutrons, color, lang }) {
       }
       if (quarkGroupRef.current) quarkGroupRef.current.style.display = showQ ? "" : "none";
       // ordre de tracé : fond d'abord (effet de volume)
-      if (pts.length <= 260) {
+      if (pts.length <= 400) {  // trie toujours en profondeur (volume net meme pour les noyaux denses)
         const par = parent();
         if (par) {
           order.sort((a, b) => depths[a] - depths[b]);
@@ -694,7 +694,7 @@ function AtomView({ Z, neutrons, color, lang }) {
     if (pointers.current.size >= 2) {
       const [a, b] = [...pointers.current.values()];
       const d = Math.hypot(a.x - b.x, a.y - b.y);
-      if (v.pinchD) v.zoom = clamp(v.pinchZoom * (d / v.pinchD), 0.6, 14);
+      if (v.pinchD) v.zoom = clamp(v.pinchZoom * (d / v.pinchD), 0.6, 30);
     } else if (v.dragging) {
       // trackball : glissement horizontal → axe vertical ; vertical → axe horizontal
       const dx = (e.clientX - v.lx) * 0.01;
@@ -714,7 +714,7 @@ function AtomView({ Z, neutrons, color, lang }) {
       v.dragging = true; v.lx = p.x; v.ly = p.y; v.pinchD = 0;
     }
   };
-  const setZoom = (f) => { const v = view.current; v.zoom = clamp(v.zoom * f, 0.6, 14); };
+  const setZoom = (f) => { const v = view.current; v.zoom = clamp(v.zoom * f, 0.6, 30); };
   const resetView = () => { const v = view.current; v.zoom = 1; v.Ro = IDENTITY.slice(); v.Rn = IDENTITY.slice(); };
 
   return (
@@ -756,7 +756,7 @@ function AtomView({ Z, neutrons, color, lang }) {
                       ref={(el) => { nucleusRefs.current[i] = el; }} />
             ))}
             <g ref={quarkGroupRef} style={{ display: "none" }}>
-              {Array.from({ length: 80 }).map((_, s) =>
+              {Array.from({ length: 120 }).map((_, s) =>
                 [0, 1, 2].map((q) => {
                   const idx = s * 3 + q;
                   return (
@@ -952,6 +952,7 @@ const I18N = {
     realLife:"Dans la vie r\u00e9elle :", where:"O\u00f9 le trouve-t-on :", techInterest:"Int\u00e9r\u00eat technologique :", namedAfter:"Nomm\u00e9 en l'honneur de",
     proton:"Proton", neutronsLab:"Neutrons", reset:"r\u00e9initialiser", goTo:"Aller \u00e0 l'\u00e9l\u00e9ment",
     mapTitle:"La carte se r\u00e9v\u00e8le", explored:"explor\u00e9s", mapHint:"Touche un \u00e9l\u00e9ment pour l'explorer.",
+    supportTitle:"Soutenir Chemistry Quest", supportText:"Derri\u00e8re cette app, une conviction : la science appartient \u00e0 tout le monde. Soutenez le projet, et devenez passeur \u00e0 votre tour.", supportPick:"Choisissez le moyen qui vous convient :", supportCopied:"Num\u00e9ro copi\u00e9 \u2713", supportThanks:"Merci d'\u00eatre un passeur, vous aussi. \ud83d\ude4f",
     contactTitle:"Contact", contactLine:"Une question ? Appelle ou \u00e9cris :",
     antiquity:"Connu depuis l'Antiquit\u00e9",
     atomHint:"Glisse pour faire tourner — pince/molette pour zoomer jusque dans le noyau", rotate:"Rotation", orbits:"Orbites", quarks:"Quarks", subshells:"Sous-couches",
@@ -972,6 +973,7 @@ const I18N = {
     realLife:"In real life:", where:"Where it's found:", techInterest:"Tech importance:", namedAfter:"Named in honour of",
     proton:"Proton", neutronsLab:"Neutrons", reset:"reset", goTo:"Go to element",
     mapTitle:"The map unfolds", explored:"explored", mapHint:"Tap an element to explore it.",
+    supportTitle:"Support Chemistry Quest", supportText:"Behind this app, one belief: science belongs to everyone. Support the project and become a passeur in turn.", supportPick:"Choose the method that suits you:", supportCopied:"Number copied \u2713", supportThanks:"Thank you for being a passeur too. \ud83d\ude4f",
     contactTitle:"Contact", contactLine:"A question? Call or write:",
     antiquity:"Known since antiquity",
     atomHint:"Drag to rotate — pinch/scroll to zoom into the nucleus", rotate:"Rotate", orbits:"Orbits", quarks:"Quarks", subshells:"Subshells",
@@ -992,6 +994,7 @@ const I18N = {
     realLife:"في الحياة الواقعية:", where:"أين يوجد:", techInterest:"الأهمية التقنية:", namedAfter:"سُمّي تكريمًا لـ",
     proton:"بروتون", neutronsLab:"نيوترونات", reset:"إعادة", goTo:"اذهب إلى العنصر",
     mapTitle:"الخريطة تنكشف", explored:"مُستكشَف", mapHint:"اضغط على عنصر لاستكشافه.",
+    supportTitle:"ادعم Chemistry Quest", supportText:"وراء هذا التطبيق قناعة: العلم مِلكٌ للجميع. ادعم المشروع، وكن ناقلًا للمعرفة بدورك.", supportPick:"اختر الوسيلة التي تناسبك:", supportCopied:"تم نسخ الرقم \u2713", supportThanks:"شكرًا لأنك ناقلٌ للمعرفة أيضًا. \ud83d\ude4f",
     contactTitle:"تواصل", contactLine:"سؤال؟ اتصل أو اكتب:",
     atomHint:"اسحب للتدوير — اقرص/مرّر للتكبير حتى داخل النواة", rotate:"التدوير", orbits:"المدارات", quarks:"كواركات", subshells:"الأغلفة الفرعية",
     atomicNumber:"العدد الذرّي", antiquity:"معروف منذ العصور القديمة",
@@ -1392,6 +1395,13 @@ const CATEGORIES = [
 const catGen = (id) => (CATEGORIES.find((c) => c.id === id) || CATEGORIES[5]).gen;
 const catLabel = (id, lang) => { const c = CATEGORIES.find((c) => c.id === id); return c ? c.label[lang] : ""; };
 
+/* ===== Moyens de soutien (même numéro pour les 3 réseaux) ===== */
+const SUPPORT = [
+  { id: "wave",  label: "Wave",  kind: "tel", value: "+22788961209", display: "+227 88 96 12 09", color: "#1DC8FF", logo: "./icons/support/wave.png" },
+  { id: "nita",  label: "NITA",  kind: "tel", value: "+22788961209", display: "+227 88 96 12 09", color: "#1B5FA8", logo: "./icons/support/nita.png" },
+  { id: "amana", label: "AMANA", kind: "tel", value: "+22788961209", display: "+227 88 96 12 09", color: "#2FA84F", logo: "./icons/support/amana.png" },
+];
+
 export default function ChemistryQuest() {
   const [Z, setZ] = useState(6); // on démarre sur le carbone, cœur du vivant
   const elem = ELEMENTS[Z - 1];
@@ -1423,6 +1433,14 @@ export default function ChemistryQuest() {
 
   // Définitions repliables (anti-encombrement)
   const [showDefs, setShowDefs] = useState(false);
+
+  // Soutien : retour visuel quand un numéro est copié
+  const [copied, setCopied] = useState(null);
+  const copyNumber = async (m) => {
+    try { await navigator.clipboard.writeText(m.value); } catch (e) {}
+    setCopied(m.id);
+    setTimeout(() => setCopied((c) => (c === m.id ? null : c)), 2000);
+  };
 
   // Bouton d'installation PWA : on capte l'événement natif du navigateur
   const [installEvt, setInstallEvt] = useState(null);
@@ -1735,6 +1753,34 @@ export default function ChemistryQuest() {
             </span>
           ))}
         </div>
+      </section>
+
+      {/* SOUTIEN */}
+      <section className="cq-support">
+        <div className="cq-support-title">{L.supportTitle}</div>
+        <p className="cq-support-text">{L.supportText}</p>
+        <div className="cq-support-pick">{L.supportPick}</div>
+        <div className="cq-support-grid">
+          {SUPPORT.map((m) => (
+            m.kind === "link" ? (
+              <a key={m.id} className="cq-support-btn" href={m.value}
+                 target="_blank" rel="noopener noreferrer"
+                 style={{ "--mc": m.color }}>
+                {m.logo ? <img className="cq-support-logo" src={m.logo} alt={m.label} /> : <span className="cq-support-dot" style={{ background: m.color }} />}
+                <span className="cq-support-name">{m.label}</span>
+                <span className="cq-support-val">↗</span>
+              </a>
+            ) : (
+              <button key={m.id} className="cq-support-btn" onClick={() => copyNumber(m)}
+                      style={{ "--mc": m.color }}>
+                {m.logo ? <img className="cq-support-logo" src={m.logo} alt={m.label} /> : <span className="cq-support-dot" style={{ background: m.color }} />}
+                <span className="cq-support-name">{m.label}</span>
+                <span className="cq-support-val">{copied === m.id ? L.supportCopied : (m.display || m.value)}</span>
+              </button>
+            )
+          ))}
+        </div>
+        <div className="cq-support-thanks">{L.supportThanks}</div>
       </section>
 
       {/* CONTACT */}
@@ -2077,6 +2123,31 @@ const CSS = `
   font-size:13.5px;font-weight:500;color:var(--gold-bright);text-decoration:none;
   background:#ffffff0d;border:1px solid #d8b15a33;transition:all .15s;}
 .cq-contact-link:hover{background:#d8b15a22;border-color:#d8b15a66;}
+
+/* SOUTIEN */
+.cq-support{margin:26px 2px 0;padding:18px;border-radius:16px;position:relative;z-index:1;
+  text-align:center;background:linear-gradient(160deg,#1c2a5455,#0c193877);border:1px solid #E8C77822;}
+.cq-support-title{font-family:'Cormorant Garamond',serif;font-weight:600;font-size:21px;color:var(--gold-bright);}
+.cq-support-text{font-size:13.5px;line-height:1.55;color:#d7def0;font-weight:300;margin:7px auto 0;max-width:520px;}
+.cq-support-pick{font-size:12px;color:var(--muted);margin:13px 0 9px;font-weight:400;}
+.cq-support-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px;max-width:520px;margin:0 auto;}
+.cq-support-btn{display:flex;align-items:center;gap:9px;padding:11px 13px;border-radius:12px;
+  font-family:inherit;font-size:13.5px;color:#eef2fb;text-decoration:none;cursor:pointer;text-align:left;
+  background:#ffffff0c;border:1px solid var(--mc,#ffffff22);transition:all .15s;}
+.cq-support-btn:hover{background:color-mix(in srgb,var(--mc) 16%,transparent);}
+.cq-support-dot{width:11px;height:11px;border-radius:50%;flex:0 0 auto;
+  box-shadow:0 0 8px color-mix(in srgb,var(--mc) 70%,transparent);}
+.cq-support-logo{width:30px;height:30px;border-radius:8px;flex:0 0 auto;object-fit:cover;
+  background:#fff;box-shadow:0 1px 4px #00000033;}
+.cq-support-name{font-weight:600;flex:0 0 auto;}
+.cq-support-val{margin-left:auto;font-size:12px;color:var(--muted);font-family:'Space Mono',monospace;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.cq-support-thanks{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:15px;
+  color:#cdab63;margin-top:14px;}
+.cq-rtl .cq-support-btn{text-align:right;}
+.cq-rtl .cq-support-val{margin-left:0;margin-right:auto;}
+@media (max-width:430px){ .cq-support-grid{grid-template-columns:1fr;} }
+
 
 /* ARABE — lecture droite à gauche, en gardant la partie scientifique en LTR */
 .cq-rtl{direction:rtl;}
