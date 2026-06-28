@@ -1,15 +1,12 @@
 /* Service worker — cache l'app pour un fonctionnement hors-ligne */
-const CACHE = "constructeur-atomes-v18";
+const CACHE = "constructeur-atomes-v19";
 const ASSETS = [
   "./",
   "./index.html",
   "./app.js",
   "./manifest.json",
   "./icons/icon-192.png",
-  "./icons/icon-512.png",
-  "./icons/support/wave.png",
-  "./icons/support/nita.png",
-  "./icons/support/amana.png"
+  "./icons/icon-512.png"
 ];
 
 self.addEventListener("install", (e) => {
