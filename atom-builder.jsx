@@ -168,20 +168,69 @@ const SAVANTS = {
 
 /* --- Éléments nommés en l'honneur de grands savants --- */
 const NAMED_AFTER = {
-  64: "Johan Gadolin, pionnier des terres rares",
+  64: "Johan Gadolin",
   96: "Marie et Pierre Curie",
   99: "Albert Einstein",
   100: "Enrico Fermi",
-  101: "Dmitri Mendeleïev, créateur du tableau périodique",
+  101: "Dmitri Mendeleïev",
   102: "Alfred Nobel",
   103: "Ernest Lawrence",
   104: "Ernest Rutherford",
   106: "Glenn Seaborg",
   107: "Niels Bohr",
   109: "Lise Meitner",
-  111: "Wilhelm Röntgen, découvreur des rayons X",
+  111: "Wilhelm Röntgen",
   112: "Nicolas Copernic",
   118: "Iouri Oganessian",
+};
+
+const NAMED_BIO = {
+  64: "Chimiste finlandais (1760-1852) ; il découvrit l'yttrium et ouvrit l'étude des terres rares.",
+  96: "Pionniers de la radioactivité ; Marie reste la seule personne primée du Nobel en physique et en chimie.",
+  99: "Physicien de génie, auteur de la relativité et de la célèbre relation E=mc².",
+  100: "Physicien italien, bâtisseur du premier réacteur nucléaire (Nobel 1938).",
+  101: "Chimiste russe ; il imagina en 1869 le tableau périodique des éléments.",
+  102: "Inventeur suédois de la dynamite ; il fonda les prix Nobel.",
+  103: "Physicien américain (1901-1958), inventeur du cyclotron, un accélérateur de particules (Nobel 1939).",
+  104: "Physicien néo-zélandais, découvreur du noyau atomique, « père » de la physique nucléaire.",
+  106: "Chimiste américain ; il découvrit le plutonium et plusieurs éléments transuraniens.",
+  107: "Physicien danois ; son modèle de l'atome ouvrit la physique quantique (Nobel 1922).",
+  109: "Physicienne autrichienne, co-découvreuse de la fission nucléaire, longtemps oubliée des honneurs.",
+  111: "Physicien allemand ; sa découverte des rayons X lui valut le premier prix Nobel de physique (1901).",
+  112: "Astronome polonais ; il plaça le Soleil — et non la Terre — au centre du système.",
+  118: "Physicien russe, pionnier des éléments superlourds ; rare savant honoré de son vivant.",
+};
+const NAMED_BIO_EN = {
+  64: "Finnish chemist (1760–1852) who discovered yttrium and opened the study of rare earths.",
+  96: "Pioneers of radioactivity; Marie remains the only person awarded Nobels in both physics and chemistry.",
+  99: "Visionary physicist, author of relativity and the famous E=mc².",
+  100: "Italian physicist who built the first nuclear reactor (Nobel 1938).",
+  101: "Russian chemist who devised the periodic table of the elements in 1869.",
+  102: "Swedish inventor of dynamite, who founded the Nobel Prizes.",
+  103: "American physicist (1901–1958), inventor of the cyclotron, a particle accelerator (Nobel 1939).",
+  104: "New Zealand physicist who discovered the atomic nucleus, the 'father' of nuclear physics.",
+  106: "American chemist who discovered plutonium and several transuranium elements.",
+  107: "Danish physicist whose atomic model opened quantum physics (Nobel 1922).",
+  109: "Austrian physicist, co-discoverer of nuclear fission, long overlooked by honours.",
+  111: "German physicist; his discovery of X-rays earned the very first Nobel Prize in Physics (1901).",
+  112: "Polish astronomer who placed the Sun — not the Earth — at the centre of the system.",
+  118: "Russian physicist, pioneer of superheavy elements; rarely is a scientist so honoured while still living.",
+};
+const NAMED_BIO_AR = {
+  64: "كيميائي فنلندي (1760–1852)، اكتشف الإيتريوم وفتح باب دراسة العناصر الأرضية النادرة.",
+  96: "روّاد النشاط الإشعاعي؛ وتظلّ ماري الوحيدة الحائزة على نوبل في الفيزياء والكيمياء معًا.",
+  99: "فيزيائي عبقري، صاحب النسبية والعلاقة الشهيرة E=mc².",
+  100: "فيزيائي إيطالي، بنى أوّل مفاعل نووي (نوبل 1938).",
+  101: "كيميائي روسي، وضع عام 1869 الجدول الدوري للعناصر.",
+  102: "مخترع الديناميت السويدي، وأسّس جوائز نوبل.",
+  103: "فيزيائي أمريكي (1901–1958)، مخترع السيكلوترون، وهو مُعجّل للجسيمات (نوبل 1939).",
+  104: "فيزيائي نيوزيلندي، مكتشف نواة الذرّة، و«أبو» الفيزياء النووية.",
+  106: "كيميائي أمريكي، اكتشف البلوتونيوم وعدّة عناصر فوق يورانية.",
+  107: "فيزيائي دنماركي، فتح نموذجه للذرّة باب الفيزياء الكمّية (نوبل 1922).",
+  109: "فيزيائية نمساوية، شاركت في اكتشاف الانشطار النووي، وطال تجاهل تكريمها.",
+  111: "فيزيائي ألماني؛ نال عن اكتشافه الأشعة السينية أوّل جائزة نوبل في الفيزياء (1901).",
+  112: "فلكي بولندي، وضع الشمس — لا الأرض — في مركز النظام.",
+  118: "فيزيائي روسي، رائد العناصر فائقة الثقل؛ ونادرًا ما يُكرَّم عالم وهو على قيد الحياة.",
 };
 
 /* --- Mise en garde : éléments toxiques ou radioactifs --- */
@@ -494,7 +543,7 @@ function AtomView({ Z, neutrons, color, lang }) {
     const onWheel = (e) => {
       e.preventDefault();
       const v = view.current;
-      v.zoom = clamp(v.zoom * (1 - e.deltaY * 0.0015), 0.6, 100);
+      v.zoom = clamp(v.zoom * (1 - e.deltaY * 0.0015), 0.6, 200);
     };
     el.addEventListener("wheel", onWheel, { passive: false });
     return () => el.removeEventListener("wheel", onWheel);
@@ -519,8 +568,9 @@ function AtomView({ Z, neutrons, color, lang }) {
       // on n'auto-anime pas la cible qu'on manipule à l'instant
       const dragT = v.dragging ? v.target : null;
       if (!reduce) {
-        const ao = matMul(rotY(dt * 0.16), rotX(dt * 0.05));
-        const an = matMul(rotY(dt * 0.20), rotZ(dt * 0.10));
+        const damp = Math.min(1, 2.5 / v.zoom); // plus on zoome, plus la rotation ralentit (vue stable)
+        const ao = matMul(rotY(dt * 0.16 * damp), rotX(dt * 0.05 * damp));
+        const an = matMul(rotY(dt * 0.20 * damp), rotZ(dt * 0.10 * damp));
         if (dragT !== "orbits")  v.Ro = matMul(ao, v.Ro);
         if (dragT !== "nucleus") v.Rn = matMul(an, v.Rn);
       }
@@ -694,7 +744,7 @@ function AtomView({ Z, neutrons, color, lang }) {
     if (pointers.current.size >= 2) {
       const [a, b] = [...pointers.current.values()];
       const d = Math.hypot(a.x - b.x, a.y - b.y);
-      if (v.pinchD) v.zoom = clamp(v.pinchZoom * (d / v.pinchD), 0.6, 100);
+      if (v.pinchD) v.zoom = clamp(v.pinchZoom * (d / v.pinchD), 0.6, 200);
     } else if (v.dragging) {
       // trackball : glissement horizontal → axe vertical ; vertical → axe horizontal
       const dx = (e.clientX - v.lx) * 0.01;
@@ -714,7 +764,7 @@ function AtomView({ Z, neutrons, color, lang }) {
       v.dragging = true; v.lx = p.x; v.ly = p.y; v.pinchD = 0;
     }
   };
-  const setZoom = (f) => { const v = view.current; v.zoom = clamp(v.zoom * f, 0.6, 100); };
+  const setZoom = (f) => { const v = view.current; v.zoom = clamp(v.zoom * f, 0.6, 200); };
   const resetView = () => { const v = view.current; v.zoom = 1; v.Ro = IDENTITY.slice(); v.Rn = IDENTITY.slice(); };
 
   return (
@@ -920,10 +970,10 @@ const SAVANTS_EN = {
 };
 
 const NAMED_AFTER_EN = {
-  64:"Johan Gadolin, a pioneer of rare earths",96:"Marie and Pierre Curie",
-  99:"Albert Einstein",100:"Enrico Fermi",101:"Dmitri Mendeleev, creator of the periodic table",
+  64:"Johan Gadolin",96:"Marie and Pierre Curie",
+  99:"Albert Einstein",100:"Enrico Fermi",101:"Dmitri Mendeleev",
   102:"Alfred Nobel",103:"Ernest Lawrence",104:"Ernest Rutherford",106:"Glenn Seaborg",
-  107:"Niels Bohr",109:"Lise Meitner",111:"Wilhelm R\u00f6ntgen, who discovered X-rays",
+  107:"Niels Bohr",109:"Lise Meitner",111:"Wilhelm R\u00f6ntgen",
   112:"Nicolaus Copernicus",118:"Yuri Oganessian",
 };
 
@@ -1059,10 +1109,10 @@ const SAVANTS_AR = {
 };
 
 const NAMED_AFTER_AR = {
-  64:"يوهان غادولين، رائد العناصر الأرضية النادرة",96:"ماري وبيير كوري",
-  99:"ألبرت أينشتاين",100:"إنريكو فيرمي",101:"ديمتري مندليف، واضع الجدول الدوري",
+  64:"يوهان غادولين",96:"ماري وبيير كوري",
+  99:"ألبرت أينشتاين",100:"إنريكو فيرمي",101:"ديمتري مندليف",
   102:"ألفريد نوبل",103:"إرنست لورنس",104:"إرنست رذرفورد",106:"غلين سيبورغ",
-  107:"نيلز بور",109:"ليزه مايتنر",111:"فيلهلم رونتغن، مكتشف الأشعة السينية",
+  107:"نيلز بور",109:"ليزه مايتنر",111:"فيلهلم رونتغن",
   112:"نيكولاس كوبرنيكوس",118:"يوري أوغانيسيان",
 };
 
@@ -1677,6 +1727,9 @@ export default function ChemistryQuest() {
         {NAMED_AFTER[Z] && (
           <div className="cq-savant">✦ {L.namedAfter} {m3(NAMED_AFTER[Z], NAMED_AFTER_EN[Z], NAMED_AFTER_AR[Z])}.</div>
         )}
+        {NAMED_BIO[Z] && (
+          <div className="cq-savant-bio">{m3(NAMED_BIO[Z], NAMED_BIO_EN[Z], NAMED_BIO_AR[Z])}</div>
+        )}
         {DANGER[Z] && <div className="cq-danger">⚠ {m3(DANGER[Z], DANGER_EN[Z], DANGER_AR[Z])}</div>}
       </div>
 
@@ -1973,6 +2026,8 @@ const CSS = `
 .cq-fact b{font-style:normal;color:var(--gold);font-family:'Space Grotesk',sans-serif;
   font-size:12px;letter-spacing:.04em;text-transform:uppercase;}
 .cq-savant{margin-top:8px;font-size:13.5px;color:#cfe0ff;line-height:1.4;}
+.cq-savant-bio{margin:3px 0 0 16px;font-size:12.5px;color:var(--muted);line-height:1.45;font-weight:300;font-style:italic;}
+.cq-rtl .cq-savant-bio{margin:3px 16px 0 0;text-align:right;}
 .cq-danger{margin-top:8px;font-size:13px;color:#f0a58f;line-height:1.4;font-weight:500;}
 
 /* fiche détaillée */
