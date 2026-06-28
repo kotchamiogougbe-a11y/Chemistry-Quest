@@ -494,7 +494,7 @@ function AtomView({ Z, neutrons, color, lang }) {
     const onWheel = (e) => {
       e.preventDefault();
       const v = view.current;
-      v.zoom = clamp(v.zoom * (1 - e.deltaY * 0.0015), 0.6, 30);
+      v.zoom = clamp(v.zoom * (1 - e.deltaY * 0.0015), 0.6, 100);
     };
     el.addEventListener("wheel", onWheel, { passive: false });
     return () => el.removeEventListener("wheel", onWheel);
@@ -618,14 +618,14 @@ function AtomView({ Z, neutrons, color, lang }) {
             const idx = slot * 3 + q;
             const flavor = p.p ? (q < 2 ? "u" : "d") : (q < 1 ? "u" : "d");
             const a = q * 2.0944; // 120°
-            const qx = sx + rr * 0.4 * Math.cos(a);
-            const qy = sy + rr * 0.4 * Math.sin(a);
+            const qx = sx + rr * 0.45 * Math.cos(a);
+            const qy = sy + rr * 0.45 * Math.sin(a);
             const qn = quarkRefs.current[idx];
             if (qn) {
               qn.setAttribute("class", flavor === "u" ? "cq-quark-u" : "cq-quark-d");
               qn.setAttribute("cx", qx.toFixed(2));
               qn.setAttribute("cy", qy.toFixed(2));
-              qn.setAttribute("r", (rr * 0.42).toFixed(2));
+              qn.setAttribute("r", (rr * 0.36).toFixed(2));
               qn.style.opacity = (0.55 + depth * 0.45).toFixed(2);
               qn.style.display = "";
             }
@@ -634,7 +634,7 @@ function AtomView({ Z, neutrons, color, lang }) {
               lb.textContent = flavor;
               lb.setAttribute("x", qx.toFixed(2));
               lb.setAttribute("y", qy.toFixed(2));
-              lb.setAttribute("font-size", (rr * 0.6).toFixed(2));
+              lb.setAttribute("font-size", (rr * 0.5).toFixed(2));
               lb.style.opacity = (0.7 + depth * 0.3).toFixed(2);
               lb.style.display = "";
             }
@@ -694,7 +694,7 @@ function AtomView({ Z, neutrons, color, lang }) {
     if (pointers.current.size >= 2) {
       const [a, b] = [...pointers.current.values()];
       const d = Math.hypot(a.x - b.x, a.y - b.y);
-      if (v.pinchD) v.zoom = clamp(v.pinchZoom * (d / v.pinchD), 0.6, 30);
+      if (v.pinchD) v.zoom = clamp(v.pinchZoom * (d / v.pinchD), 0.6, 100);
     } else if (v.dragging) {
       // trackball : glissement horizontal → axe vertical ; vertical → axe horizontal
       const dx = (e.clientX - v.lx) * 0.01;
@@ -714,7 +714,7 @@ function AtomView({ Z, neutrons, color, lang }) {
       v.dragging = true; v.lx = p.x; v.ly = p.y; v.pinchD = 0;
     }
   };
-  const setZoom = (f) => { const v = view.current; v.zoom = clamp(v.zoom * f, 0.6, 30); };
+  const setZoom = (f) => { const v = view.current; v.zoom = clamp(v.zoom * f, 0.6, 100); };
   const resetView = () => { const v = view.current; v.zoom = 1; v.Ro = IDENTITY.slice(); v.Rn = IDENTITY.slice(); };
 
   return (
@@ -789,7 +789,7 @@ function AtomView({ Z, neutrons, color, lang }) {
                   aria-label="Zoom −">−</button>
           <button className="cq-zoom-btn" onClick={resetView}
                   aria-label="Reset">⌖</button>
-          <button className="cq-zoom-btn" onClick={() => setZoom(1.4)}
+          <button className="cq-zoom-btn" onClick={() => setZoom(1.5)}
                   aria-label="Zoom +">+</button>
         </div>
       </div>
